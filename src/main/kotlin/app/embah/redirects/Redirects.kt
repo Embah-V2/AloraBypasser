@@ -26,7 +26,6 @@ class Redirects {
             if (info.contains("SerialNumber")) {
                 info = info.replace("SerialNumber", "")
             }
-            info = info.replace(" ", "")
 
             serial = info.trim()
             mac    = (NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).hardwareAddress)
