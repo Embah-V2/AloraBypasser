@@ -1,7 +1,6 @@
 package app.embah.commons.utils
 
 import app.embah.commons.data.MacAddress
-import app.embah.redirects.Redirects
 import java.io.File
 import java.net.InetAddress
 import java.net.NetworkInterface
