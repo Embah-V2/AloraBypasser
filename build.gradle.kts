@@ -4,6 +4,8 @@
  * This generated file contains a sample Kotlin application project to get you started.
  */
 
+val mainClass = "app.embah.AppKt"
+
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.3.61"
@@ -13,12 +15,10 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+
     jcenter()
 
     mavenCentral()
-
 }
 
 dependencies {
@@ -34,7 +34,33 @@ dependencies {
     implementation("org.ow2.asm", "asm-commons","6.0")
 }
 
+tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    jar {
+        manifest {
+            attributes(
+                "Main-Class" to mainClass
+            )
+        }
+
+        //add all jars to fat jar (kotlin libs, ASM libs)
+        from({
+            configurations.runtimeClasspath.get().filter {
+                it.name.endsWith("jar")}.map { zipTree(it) }
+        })
+
+        // defaults to project.name
+        archiveBaseName.set("${project.name}-fat")
+
+        // defaults to all, so removing this overrides the normal, non-fat jar
+        archiveClassifier.set("")
+    }
+}
+
 application {
     // Define the main class for the application.
-    mainClassName = "app.embah.AppKt"
+    mainClassName = mainClass
 }

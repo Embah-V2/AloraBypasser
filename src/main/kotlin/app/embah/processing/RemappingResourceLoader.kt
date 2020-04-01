@@ -1,5 +1,6 @@
 package app.embah.processing
 
+import app.embah.commons.utils.Configuration
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.Remapper
@@ -26,17 +27,21 @@ class RemappingResourceLoader(source: String) {
     }
 
     companion object {
+
+        const val REDIRECT_PATH = "app/embah/redirects/Redirects"
+
         fun bytesFromFile(file: File): ByteArray = Files.readAllBytes(file.toPath())
     }
 
     inner class ResourceArchive(bytes: ByteArray) {
-
         val resourceMap = HashMap<String, ByteArray>()
         val classMap    = HashMap<String, ClassNode>()
         val remapper    = object: Remapper() {
             override fun map(typeName: String?): String {
+                //remap java/net/NetworkInterface to our Redirect class
                 return if (typeName == "java/net/NetworkInterface") {
-                    "app/embah/redirects/net/Network"
+                    REDIRECT_PATH
+                            .also { if (Configuration.debugging) println("getHardwareAddress() successfully remapped") }
                 } else super.map(typeName)
             }
         }

@@ -3,33 +3,33 @@
  */
 package app.embah
 
+import app.embah.commons.data.MacAddress
+import app.embah.commons.utils.Configuration
+import app.embah.commons.utils.Hardware
 import app.embah.processing.RemappingResourceLoader
 import java.io.File
 import java.lang.invoke.MethodHandles
 import java.net.URLClassLoader
+import kotlin.system.exitProcess
 
 class App {
 
-    lateinit var classLoader: URLClassLoader
+    fun run(aloraClientPath: String) {
 
-    fun run() {
-
-        val separator = System.getProperty("file.separator")
-        val directory = "${System.getProperty("user.home")}${separator}alora$separator"
-        val remapper  = RemappingResourceLoader("${directory}client.jar").also {
+        val remapper = RemappingResourceLoader(aloraClientPath).also {
             it.client.outputAsJar("src/main/resources/modified.jar")
         }
 
         //add libs to the classloader
-        classLoader = URLClassLoader(arrayOf(
-                //the game jar itself
+        val classLoader = URLClassLoader(arrayOf(
+                //the modified game jar itself
                 File("src/main/resources/modified.jar").toURI().toURL(),
                 //the jna library
-                File("${directory}jna-4.5.2.jar").toURI().toURL(),
+                File("src/main/resources/alora_dependencies/jna-4.5.2.jar").toURI().toURL(),
                 //the discord presence library
-                File("${directory}discord-rpc-release-v3.3.0.jar").toURI().toURL(),
-                //opengl client drawing libs
-                File("${directory}clientlibs.jar").toURI().toURL()
+                File("src/main/resources/alora_dependencies/discord-rpc-release-v3.3.0.jar").toURI().toURL(),
+                //opengl client drawing library
+                File("src/main/resources/alora_dependencies/clientlibs.jar").toURI().toURL()
         ))
 
         //Alora's main class is always 'Alora'
@@ -39,6 +39,49 @@ class App {
     }
 }
 
-fun main() {
-    App().run()
+fun main(args: Array<String>) {
+
+    var path: String? = null
+
+    Configuration.invoke()
+
+    if (args.size < 2) {
+        println("Insufficient Arguments, provide a direct path to Alora's Client")
+        println("Try: 'java -jar AloraBypasser-fat.jar --path C:\\path\\to\\alora\\client.jar'")
+        exitProcess(1)
+    } else {
+        args.forEachIndexed { index, arg ->
+            when (arg) {
+                "--path" -> path = args[index + 1]
+                "--mac" -> {
+                    val mac = when (val value = args[index + 1]) {
+                        "random" -> Hardware.generateVendoredMac().also {
+                            println("[CLI] Random MAC address = $it")
+                        }
+                        else -> MacAddress(Hardware.stringToMac(value.replace(Regex(":|-"), "")), "Unknown")
+                    }
+                    Configuration.hardwareProfile.mac = mac.also { println("[CLI] Mac address set to ${it macSeparatedBy (":")}") }
+                }
+                "--serial" ->  {
+                    val serial = when (val value = args[index + 1]) {
+                        "random" -> Hardware.generateSerialNumber().also {
+                            println("[CLI] Random Serial Number = $it")
+                        }
+                        else -> value
+                    }
+                    Configuration.hardwareProfile.serial = serial.also { println("[CLI] Serial address set to $it") }
+                }
+                "--debug" -> Configuration.debugging = true
+            }
+        }
+    }
+
+    if (path == null) {
+        println("Insufficient Arguments, provide a direct path to Alora's Client")
+        println("Try: 'java -jar AloraBypasser-fat.jar --path C:\\path\\to\\alora\\client.jar'")
+        exitProcess(1)
+    }
+
+    //path will never be null at this point
+    App().run(path!!)
 }
