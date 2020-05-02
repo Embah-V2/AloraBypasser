@@ -17,19 +17,12 @@ class App {
     fun run(aloraClientPath: String) {
 
         val remapper = RemappingResourceLoader(aloraClientPath).also {
-            it.client.outputAsJar("src/main/resources/modified.jar")
+            it.client.outputAsJar(aloraClientPath + "modified.jar")
         }
 
-        //add libs to the classloader
         val classLoader = URLClassLoader(arrayOf(
                 //the modified game jar itself
-                File("src/main/resources/modified.jar").toURI().toURL(),
-                //the jna library
-                File("src/main/resources/alora_dependencies/jna-4.5.2.jar").toURI().toURL(),
-                //the discord presence library
-                File("src/main/resources/alora_dependencies/discord-rpc-release-v3.3.0.jar").toURI().toURL(),
-                //opengl client drawing library
-                File("src/main/resources/alora_dependencies/clientlibs.jar").toURI().toURL()
+                File(aloraClientPath + "modified.jar").toURI().toURL()
         ))
 
         //Alora's main class is always 'Alora'
@@ -41,7 +34,7 @@ class App {
 
 fun main(args: Array<String>) {
 
-    var path: String? = null
+    var path = ""
 
     Configuration.invoke()
 
@@ -76,12 +69,11 @@ fun main(args: Array<String>) {
         }
     }
 
-    if (path == null) {
+    if (path == "") {
         println("Insufficient Arguments, provide a direct path to Alora's Client")
         println("Try: 'java -jar AloraBypasser-fat.jar --path C:\\path\\to\\alora\\client.jar'")
         exitProcess(1)
+    } else {
+        App().run(path)
     }
-
-    //path will never be null at this point
-    App().run(path!!)
 }

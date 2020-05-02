@@ -9,16 +9,16 @@
 ## Usage
 Run with JDK 8
 ```
-java -jar AloraBypasser-fat.jar --path C:\path\to\alora\client.jar
+java -jar AloraBypasser-fat.jar --path C:\path\to\alora\folder\
 ```
 ## Optional Arguments
 ```
---mac [random] => use a random Vendored MAC address 
---mac [XX:XX:XX:XX:XX:XX] => use the specified MAC address
+--mac "random" => use a random Vendored MAC address 
+--mac "XX:XX:XX:XX:XX:XX" => use the specified MAC address
 ```
 ```
---serial [random] => use a random Serial Number 
---serial [XXXXXXXXXXXXXX] => use the specified Serial number 
+--serial "random" => use a random Serial Number 
+--serial "XXXXXXXXXXXXXX" => use the specified Serial number 
 ```
 ```
 --debug => enable verbose debugging

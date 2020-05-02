@@ -18,7 +18,7 @@ class ClientClassRemapper(cv: ClassVisitor?, remapper: Remapper): ClassRemapper(
 
         override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
             //can be used for detection purposes
-            if (name == "getInputArguments") {//RemappingResourceLoader.REDIRECT_PATH
+            if (name == "getInputArguments") {
                 super.visitMethodInsn(Opcodes.INVOKESTATIC, RemappingResourceLoader.REDIRECT_PATH, name, desc, false)
                         .also { if (Configuration.debugging) println("getInputArguments() successfully remapped") }
             } else if (name.startsWith("getSerialNumber")) { //remap all SerialNumber methods

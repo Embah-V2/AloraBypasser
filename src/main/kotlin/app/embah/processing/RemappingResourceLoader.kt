@@ -15,12 +15,12 @@ import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class RemappingResourceLoader(source: String) {
+class RemappingResourceLoader(directory: String) {
  
     val client: ResourceArchive
 
     init {
-        val file = File(source)
+        val file = File(directory + "client.jar")
         //make a copy of the raw client into the resources folder
         file.copyTo(File("src/main/resources/client.jar"), overwrite = true)
         client = ResourceArchive(bytesFromFile(file))

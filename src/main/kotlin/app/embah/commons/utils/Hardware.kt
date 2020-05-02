@@ -55,13 +55,13 @@ object Hardware {
 
             Configuration.OperatingSystem.WIN -> {
 
-                val builder = ProcessBuilder("wmic", "baseboard", "get", "serialnumber")
-                val process = builder.start()
-                val inputStream = process.inputStream
+                val builder  = ProcessBuilder("wmic", "baseboard", "get", "serialnumber")
+                val process  = builder.start()
+                val inStream = process.inputStream
 
                 var character: Int
                 val sb = StringBuilder()
-                while (inputStream.read().also { character = it } != -1) {
+                while (inStream.read().also { character = it } != -1) {
                     sb.append(character.toChar())
                 }
                 var info = sb.toString()
